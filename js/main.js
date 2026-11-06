@@ -69,7 +69,7 @@ function lessonView(l0,idx){
     <span class="simple-tag">${U.simple}</span>
     <div class="sgrid">
       <div class="sbox"><h3>${U.why}</h3><p>${l.eli5.why}</p></div>
-      <div class="sbox"><h3>${U.steps}</h3><ol class="steps">${l.eli5.steps.map(s=>`<li>${s}</li>`).join("")}</ol></div>
+      <div class="sbox"><h3>${U.steps}</h3><ol class="steps">${l.eli5.steps.map(s=>`<li><span>${s}</span></li>`).join("")}</ol></div>
       <div class="sbox ex"><h3>${U.ex}</h3><p>${l.eli5.ex}</p></div>
     </div>
   </section>
