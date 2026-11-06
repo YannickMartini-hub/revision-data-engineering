@@ -27,14 +27,14 @@ function isFallback(){const p=PACKS[st.lang];return st.lang!=="fr"&&(!p||!p.less
 function title(i){return u().titles[i]}
 
 /* ---------- navigation ---------- */
-const extra=()=>[["tableau",u().home,"⌂"],["carte",u().map,"00"],["oral",u().oral,"Q?"],["lexique",u().lex,"A–Z"],["suivi",u().track,"✓"]];
-function navItems(){const e=extra();return [e[0],e[1],...L.map((l,i)=>[l.id,title(i),String(i+1).padStart(2,"0")]),e[2],e[3],e[4]]}
+const extra=()=>[["tableau",u().home,"⌂"],["video",vs().nav,"▶"],["carte",u().map,"00"],["oral",u().oral,"Q?"],["lexique",u().lex,"A–Z"],["suivi",u().track,"✓"]];
+function navItems(){const e=extra();return [e[0],e[1],e[2],...L.map((l,i)=>[l.id,title(i),String(i+1).padStart(2,"0")]),e[3],e[4],e[5]]}
 function curId(){return (location.hash||"#tableau").slice(1)}
 function renderNav(cur){
   const rl=document.getElementById("raillinks");rl.innerHTML="";
   navItems().forEach(([id,t,n],i)=>{
-    if(i===2){const s=document.createElement("div");s.className="sep";s.textContent=u().sepL;rl.appendChild(s)}
-    if(i===12){const s=document.createElement("div");s.className="sep";s.textContent=u().sepT;rl.appendChild(s)}
+    if(i===3){const s=document.createElement("div");s.className="sep";s.textContent=u().sepL;rl.appendChild(s)}
+    if(i===13){const s=document.createElement("div");s.className="sep";s.textContent=u().sepT;rl.appendChild(s)}
     const a=document.createElement("a");a.href="#"+id;
     a.innerHTML=`<span class="n">${n}</span><span>${esc(t)}</span>${st.done[id]?'<span class="ok">✓</span>':''}`;
     if(id===cur)a.setAttribute("aria-current","page");rl.appendChild(a);
@@ -64,7 +64,7 @@ function lessonView(l0,idx){
   const l=lessonData(l0),U=u();
   const prev=idx>0?L[idx-1]:null,next=idx<L.length-1?L[idx+1]:null;
   return `${trBanner()}
-  <div class="block"><span class="eyebrow">${f(U.lessonN,{n:idx+1})} · ${l.en}</span><h1>${esc(title(idx))}</h1><p class="lede">${l.one}</p></div>
+  <div class="block"><span class="eyebrow">${f(U.lessonN,{n:idx+1})} · ${l.en}</span><h1>${esc(title(idx))}</h1><p class="lede">${l.one}</p><a class="btn ghost" style="align-self:flex-start" href="#video-${VCH[idx+1]}">▶ ${vs().see}</a></div>
   <section class="simple">
     <span class="simple-tag">${U.simple}</span>
     <div class="sgrid">
@@ -119,7 +119,7 @@ function homeView(){
       <a class="btn" href="${nextL?"#"+nextL.id:"#oral"}">${nd===0?U.start:U.cont}</a></div>
   </section>
   <div class="block"><h2>${U.where}</h2><div class="tiles">
-    ${T("#carte",U.icMap,U.map,U.dMap)}${T("#oral",U.icOral,U.oral,U.dOral)}${T("#lexique",U.icLex,U.lex,U.dLex)}${T("#suivi",U.icTrack,U.track,U.dTrack)}
+    ${T("#video","▶",vs().nav,vs().d)}${T("#carte",U.icMap,U.map,U.dMap)}${T("#oral",U.icOral,U.oral,U.dOral)}${T("#lexique",U.icLex,U.lex,U.dLex)}${T("#suivi",U.icTrack,U.track,U.dTrack)}
   </div></div>
   <div class="block"><h2>${U.ten}</h2><div class="lgrid">
     ${L.map((l,i)=>`<a class="lc" href="#${l.id}"><span class="n">${String(i+1).padStart(2,"0")} · ${l.en}</span><b>${esc(title(i))}</b>${chip(l)}</a>`).join("")}
@@ -198,6 +198,27 @@ function wireTrack(){
 
 }
 
+/* ---------- vidéo ---------- */
+const VCH=[0,9,85,147,212,264,328,392,438,491,531,580];
+const VS={
+ fr:{nav:"Le cours en vidéo",d:"Tout le cours en 10 minutes, animé et sous-titré.",ch:"Chapitres",intro:"Introduction",recap:"Le trajet complet",note:"",see:"Revoir ce passage en vidéo"},
+ en:{nav:"Course video",d:"The whole course in 10 minutes, animated and captioned.",ch:"Chapters",intro:"Introduction",recap:"The full journey",note:"",see:"Watch this part on video"},
+ es:{nav:"El curso en vídeo",d:"Todo el curso en 10 minutos, animado y subtitulado.",ch:"Capítulos",intro:"Introducción",recap:"El recorrido completo",note:"Vídeo en inglés, con subtítulos integrados.",see:"Ver esta parte en vídeo"},
+ it:{nav:"Il corso in video",d:"Tutto il corso in 10 minuti, animato e sottotitolato.",ch:"Capitoli",intro:"Introduzione",recap:"Il percorso completo",note:"Video in inglese, con sottotitoli integrati.",see:"Guarda questa parte in video"},
+ zh:{nav:"课程视频",d:"10 分钟看完整门课，动画加字幕。",ch:"章节",intro:"引言",recap:"完整的数据旅程",note:"视频为英文，字幕已嵌入画面。",see:"观看这一部分的视频"},
+ ja:{nav:"講義ビデオ",d:"講義全体を10分で、アニメーションと字幕つきで。",ch:"チャプター",intro:"はじめに",recap:"データの旅の全体像",note:"動画は英語です（字幕は画面に表示）。",see:"この部分を動画で見る"},
+ ar:{nav:"المقرر بالفيديو",d:"المقرر كله في 10 دقائق، متحرك ومع ترجمة.",ch:"الفصول",intro:"مقدمة",recap:"الرحلة الكاملة",note:"الفيديو باللغة الإنجليزية، والترجمة مدمجة في الصورة.",see:"شاهد هذا الجزء بالفيديو"}};
+const vs=()=>VS[st.lang]||VS.en;
+const mmss=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function videoView(start){const V=vs(),src="videos/cours-"+(st.lang==="fr"?"fr":"en")+".mp4";
+  const names=[V.intro,...L.map((l,i)=>(i+1)+" · "+title(i)),V.recap];
+  return `<section class="block"><span class="eyebrow">▶</span><h1>${V.nav}</h1><p class="lede">${V.d}</p>${V.note?`<p class="small">${V.note}</p>`:""}
+  <video id="vid" controls preload="metadata" playsinline src="${src}#t=${start||0}" style="width:100%;border-radius:12px;border:1px solid var(--line);background:#F5EFE4"></video>
+  <h2>${V.ch}</h2><div class="vch">${names.map((n,i)=>`<button class="vc" data-t="${VCH[i]}"><span class="vt">${mmss(VCH[i])}</span><span>${esc(n)}</span></button>`).join("")}</div></section>`}
+function wireVideo(start){const v=document.getElementById("vid");
+  document.querySelectorAll(".vc").forEach(b=>b.onclick=()=>{v.currentTime=+b.dataset.t;v.play();v.scrollIntoView({behavior:"smooth",block:"center"})});
+  if(start)v.addEventListener("loadedmetadata",()=>{v.currentTime=start},{once:true})}
+
 /* ---------- router ---------- */
 let lastH=null;
 function route(){
@@ -210,9 +231,10 @@ function route(){
   else if(h==="lexique"){v.innerHTML=lexView();
     document.getElementById("lq").addEventListener("input",e=>{const s=e.target.value.toLowerCase();document.querySelectorAll("#lt tr[data-s]").forEach(r=>r.hidden=!r.dataset.s.includes(s))})}
   else if(h==="carte")v.innerHTML=mapView();
+  else if(h.startsWith("video")){const st0=+(h.split("-")[1]||0);v.innerHTML=videoView(st0);wireVideo(st0)}
   else if(h==="suivi"){v.innerHTML=trackView();wireTrack()}
   else v.innerHTML=homeView();
-  renderNav(idx>=0?h:(["oral","lexique","carte","suivi"].includes(h)?h:"tableau"));
+  renderNav(idx>=0?h:(h.startsWith("video")?"video":["oral","lexique","carte","suivi"].includes(h)?h:"tableau"));
   window.scrollTo(0,keep);lastH=h;
 }
 function pickLang(){
