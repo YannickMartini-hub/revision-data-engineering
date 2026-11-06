@@ -1,0 +1,15 @@
+{
+  "name": "Data Eng sans prise de tête",
+  "short_name": "Data Eng",
+  "description": "Le cours Data Engineering & Cloud réexpliqué simplement : 10 leçons, quiz, mode oral, vidéo, 7 langues.",
+  "start_url": "./#tableau",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F5EFE4",
+  "theme_color": "#1E2A4A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -119,7 +119,7 @@ function homeView(){
       <a class="btn" href="${nextL?"#"+nextL.id:"#oral"}">${nd===0?U.start:U.cont}</a></div>
   </section>
   <div class="block"><h2>${U.where}</h2><div class="tiles">
-    ${T("#video","▶",vs().nav,vs().d)}${T("#carte",U.icMap,U.map,U.dMap)}${T("#oral",U.icOral,U.oral,U.dOral)}${T("#lexique",U.icLex,U.lex,U.dLex)}${T("#suivi",U.icTrack,U.track,U.dTrack)}
+    ${installTile()}${T("#video",vs().eyV,vs().nav,vs().d)}${T("#carte",U.icMap,U.map,U.dMap)}${T("#oral",U.icOral,U.oral,U.dOral)}${T("#lexique",U.icLex,U.lex,U.dLex)}${T("#suivi",U.icTrack,U.track,U.dTrack)}
   </div></div>
   <div class="block"><h2>${U.ten}</h2><div class="lgrid">
     ${L.map((l,i)=>`<a class="lc" href="#${l.id}"><span class="n">${String(i+1).padStart(2,"0")} · ${l.en}</span><b>${esc(title(i))}</b>${chip(l)}</a>`).join("")}
@@ -201,23 +201,39 @@ function wireTrack(){
 /* ---------- vidéo ---------- */
 const VCH=[0,9,85,147,212,264,328,392,438,491,531,580];
 const VS={
- fr:{nav:"Le cours en vidéo",d:"Tout le cours en 10 minutes, animé et sous-titré.",ch:"Chapitres",intro:"Introduction",recap:"Le trajet complet",note:"",see:"Revoir ce passage en vidéo"},
- en:{nav:"Course video",d:"The whole course in 10 minutes, animated and captioned.",ch:"Chapters",intro:"Introduction",recap:"The full journey",note:"",see:"Watch this part on video"},
- es:{nav:"El curso en vídeo",d:"Todo el curso en 10 minutos, animado y subtitulado.",ch:"Capítulos",intro:"Introducción",recap:"El recorrido completo",note:"Vídeo en inglés, con subtítulos integrados.",see:"Ver esta parte en vídeo"},
- it:{nav:"Il corso in video",d:"Tutto il corso in 10 minuti, animato e sottotitolato.",ch:"Capitoli",intro:"Introduzione",recap:"Il percorso completo",note:"Video in inglese, con sottotitoli integrati.",see:"Guarda questa parte in video"},
- zh:{nav:"课程视频",d:"10 分钟看完整门课，动画加字幕。",ch:"章节",intro:"引言",recap:"完整的数据旅程",note:"视频为英文，字幕已嵌入画面。",see:"观看这一部分的视频"},
- ja:{nav:"講義ビデオ",d:"講義全体を10分で、アニメーションと字幕つきで。",ch:"チャプター",intro:"はじめに",recap:"データの旅の全体像",note:"動画は英語です（字幕は画面に表示）。",see:"この部分を動画で見る"},
- ar:{nav:"المقرر بالفيديو",d:"المقرر كله في 10 دقائق، متحرك ومع ترجمة.",ch:"الفصول",intro:"مقدمة",recap:"الرحلة الكاملة",note:"الفيديو باللغة الإنجليزية، والترجمة مدمجة في الصورة.",see:"شاهد هذا الجزء بالفيديو"}};
+ fr:{nav:"Le cours en vidéo",d:"Tout le cours en 10 minutes, animé et sous-titré.",ch:"Chapitres",intro:"Introduction",recap:"Le trajet complet",note:"",see:"Revoir ce passage en vidéo",dl:"Télécharger pour regarder hors ligne",busy:"Téléchargement…",ok:"✓ Disponible hors ligne",err:"Téléchargement impossible, réessaie avec une connexion.",inst:"Installer l'appli",instD:"Sur ton téléphone ou ton ordi, avec son icône. Marche sans internet.",ios:"Sur iPhone : bouton Partager, puis « Sur l'écran d'accueil ».",other:"Dans le menu du navigateur : « Installer l'application » ou « Ajouter à l'écran d'accueil ».",installed:"✓ Appli installée",eyI:"Hors ligne",eyV:"Vidéo"},
+ en:{nav:"Course video",d:"The whole course in 10 minutes, animated and captioned.",ch:"Chapters",intro:"Introduction",recap:"The full journey",note:"",see:"Watch this part on video",dl:"Download to watch offline",busy:"Downloading…",ok:"✓ Available offline",err:"Download failed, try again with a connection.",inst:"Install the app",instD:"On your phone or computer, with its own icon. Works without internet.",ios:"On iPhone: Share button, then “Add to Home Screen”.",other:"In the browser menu: “Install app” or “Add to Home screen”.",installed:"✓ App installed",eyI:"Offline",eyV:"Video"},
+ es:{nav:"El curso en vídeo",d:"Todo el curso en 10 minutos, animado y subtitulado.",ch:"Capítulos",intro:"Introducción",recap:"El recorrido completo",note:"Vídeo en inglés, con subtítulos integrados.",see:"Ver esta parte en vídeo",dl:"Descargar para ver sin conexión",busy:"Descargando…",ok:"✓ Disponible sin conexión",err:"No se pudo descargar, inténtalo con conexión.",inst:"Instalar la app",instD:"En tu móvil u ordenador, con su icono. Funciona sin internet.",ios:"En iPhone: botón Compartir y luego «Añadir a pantalla de inicio».",other:"En el menú del navegador: «Instalar aplicación» o «Añadir a pantalla de inicio».",installed:"✓ App instalada",eyI:"Sin conexión",eyV:"Vídeo"},
+ it:{nav:"Il corso in video",d:"Tutto il corso in 10 minuti, animato e sottotitolato.",ch:"Capitoli",intro:"Introduzione",recap:"Il percorso completo",note:"Video in inglese, con sottotitoli integrati.",see:"Guarda questa parte in video",dl:"Scarica per guardare offline",busy:"Download in corso…",ok:"✓ Disponibile offline",err:"Download non riuscito, riprova con una connessione.",inst:"Installa l'app",instD:"Sul telefono o sul computer, con la sua icona. Funziona senza internet.",ios:"Su iPhone: pulsante Condividi, poi «Aggiungi alla schermata Home».",other:"Nel menu del browser: «Installa app» o «Aggiungi a schermata Home».",installed:"✓ App installata",eyI:"Offline",eyV:"Video"},
+ zh:{nav:"课程视频",d:"10 分钟看完整门课，动画加字幕。",ch:"章节",intro:"引言",recap:"完整的数据旅程",note:"视频为英文，字幕已嵌入画面。",see:"观看这一部分的视频",dl:"下载以离线观看",busy:"下载中…",ok:"✓ 已可离线观看",err:"下载失败，请联网后重试。",inst:"安装应用",instD:"装在手机或电脑上，有自己的图标，无网络也能用。",ios:"iPhone：点「分享」按钮，再选「添加到主屏幕」。",other:"在浏览器菜单中选择「安装应用」或「添加到主屏幕」。",installed:"✓ 应用已安装",eyI:"离线",eyV:"视频"},
+ ja:{nav:"講義ビデオ",d:"講義全体を10分で、アニメーションと字幕つきで。",ch:"チャプター",intro:"はじめに",recap:"データの旅の全体像",note:"動画は英語です（字幕は画面に表示）。",see:"この部分を動画で見る",dl:"オフライン用にダウンロード",busy:"ダウンロード中…",ok:"✓ オフラインで視聴可能",err:"ダウンロードできませんでした。接続して再試行してください。",inst:"アプリをインストール",instD:"スマホやパソコンにアイコン付きで。ネットなしでも使えます。",ios:"iPhone：共有ボタン →「ホーム画面に追加」。",other:"ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」。",installed:"✓ インストール済み",eyI:"オフライン",eyV:"ビデオ"},
+ ar:{nav:"المقرر بالفيديو",d:"المقرر كله في 10 دقائق، متحرك ومع ترجمة.",ch:"الفصول",intro:"مقدمة",recap:"الرحلة الكاملة",note:"الفيديو باللغة الإنجليزية، والترجمة مدمجة في الصورة.",see:"شاهد هذا الجزء بالفيديو",dl:"تنزيل للمشاهدة دون اتصال",busy:"جارٍ التنزيل…",ok:"✓ متاح دون اتصال",err:"تعذّر التنزيل، أعد المحاولة مع اتصال.",inst:"تثبيت التطبيق",instD:"على هاتفك أو حاسوبك، بأيقونته الخاصة. يعمل دون إنترنت.",ios:"على iPhone: زر المشاركة، ثم «إضافة إلى الشاشة الرئيسية».",other:"من قائمة المتصفح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».",installed:"✓ التطبيق مثبّت",eyI:"دون اتصال",eyV:"فيديو"}};
 const vs=()=>VS[st.lang]||VS.en;
 const mmss=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
 function videoView(start){const V=vs(),src="videos/cours-"+(st.lang==="fr"?"fr":"en")+".mp4";
   const names=[V.intro,...L.map((l,i)=>(i+1)+" · "+title(i)),V.recap];
   return `<section class="block"><span class="eyebrow">▶</span><h1>${V.nav}</h1><p class="lede">${V.d}</p>${V.note?`<p class="small">${V.note}</p>`:""}
   <video id="vid" controls preload="metadata" playsinline src="${src}#t=${start||0}" style="width:100%;border-radius:12px;border:1px solid var(--line);background:#F5EFE4"></video>
+  <div class="row"><button class="btn ghost" id="vdl">⬇ ${V.dl}</button><span class="small" id="vdls"></span></div>
   <h2>${V.ch}</h2><div class="vch">${names.map((n,i)=>`<button class="vc" data-t="${VCH[i]}"><span class="vt">${mmss(VCH[i])}</span><span>${esc(n)}</span></button>`).join("")}</div></section>`}
 function wireVideo(start){const v=document.getElementById("vid");
   document.querySelectorAll(".vc").forEach(b=>b.onclick=()=>{v.currentTime=+b.dataset.t;v.play();v.scrollIntoView({behavior:"smooth",block:"center"})});
-  if(start)v.addEventListener("loadedmetadata",()=>{v.currentTime=start},{once:true})}
+  if(start)v.addEventListener("loadedmetadata",()=>{v.currentTime=start},{once:true});
+  const btn=document.getElementById("vdl"),msg=document.getElementById("vdls"),V=vs(),url=new URL(v.getAttribute("src").split("#")[0],location.href).href;
+  if(!("caches" in window)){btn.hidden=true;return}
+  caches.open("videos").then(c=>c.match(url)).then(h=>{if(h){btn.hidden=true;msg.textContent=V.ok}});
+  btn.onclick=async()=>{btn.disabled=true;msg.textContent=V.busy;
+    try{const r=await fetch(url,{cache:"reload"});if(!r.ok)throw 0;await (await caches.open("videos")).put(url,r);btn.hidden=true;msg.textContent=V.ok}
+    catch(e){btn.disabled=false;msg.textContent=V.err}}}
+/* ---------- installation ---------- */
+let installEvt=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e});
+const isInstalled=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function installTile(){const V=vs();return isInstalled()?"":`<a class="tile" href="#" id="instbtn"><span class="ic">${V.eyI}</span><b>${V.inst}</b><span class="d" id="instd">${V.instD}</span></a>`}
+function wireInstall(){const b=document.getElementById("instbtn");if(!b)return;
+  b.onclick=async e=>{e.preventDefault();const V=vs(),d=document.getElementById("instd");
+    if(installEvt){installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;if(r.outcome==="accepted")d.textContent=V.installed;return}
+    d.textContent=/iphone|ipad|ipod/i.test(navigator.userAgent)?V.ios:V.other}}
 
 /* ---------- router ---------- */
 let lastH=null;
@@ -233,7 +249,7 @@ function route(){
   else if(h==="carte")v.innerHTML=mapView();
   else if(h.startsWith("video")){const st0=+(h.split("-")[1]||0);v.innerHTML=videoView(st0);wireVideo(st0)}
   else if(h==="suivi"){v.innerHTML=trackView();wireTrack()}
-  else v.innerHTML=homeView();
+  else{v.innerHTML=homeView();wireInstall()}
   renderNav(idx>=0?h:(h.startsWith("video")?"video":["oral","lexique","carte","suivi"].includes(h)?h:"tableau"));
   window.scrollTo(0,keep);lastH=h;
 }
